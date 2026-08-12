@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/byteswalk/imagesitter/blob/main/docs/project-v4.schema.json",
+  "title": "ImageSitter Project v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "target", "objects", "replayCases"],
+  "properties": {
+    "version": { "const": 4 },
+    "target": { "$ref": "#/$defs/target" },
+    "objects": { "type": "array", "items": { "$ref": "#/$defs/object" } },
+    "replayCases": { "type": "array", "items": { "$ref": "#/$defs/replayCase" } }
+  },
+  "$defs": {
+    "byte": { "type": "integer", "minimum": 0, "maximum": 255 },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["windowTitle", "className", "processId", "frameWidth", "frameHeight", "baselineDpi"],
+      "properties": {
+        "windowTitle": { "type": "string" },
+        "className": { "type": "string" },
+        "processId": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "frameWidth": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "frameHeight": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "baselineDpi": { "type": "integer", "minimum": 0, "maximum": 960 }
+      }
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "region", "groups", "coordinateMode", "anchorX", "anchorY", "searchRadius", "scaleSearchPercent"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "region": { "$ref": "#/$defs/region" },
+        "groups": { "type": "array", "items": { "$ref": "#/$defs/group" } },
+        "coordinateMode": { "enum": ["fixed", "scale", "anchor"] },
+        "anchorX": { "enum": ["start", "center", "end"] },
+        "anchorY": { "enum": ["start", "center", "end"] },
+        "searchRadius": { "type": "integer", "minimum": 0, "maximum": 32 },
+        "scaleSearchPercent": { "type": "integer", "minimum": 0, "maximum": 10 }
+      }
+    },
+    "region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "top", "right", "bottom"],
+      "properties": {
+        "left": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "top": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "right": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "bottom": { "type": "integer", "minimum": 1, "maximum": 4294967295 }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "enabled", "points", "minMatch"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "points": { "type": "array", "items": { "$ref": "#/$defs/point" } },
+        "minMatch": { "type": "integer", "minimum": -1 }
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dx", "dy", "reference", "tolerance", "alphaMode", "alphaTolerance", "mustNot"],
+      "properties": {
+        "dx": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "dy": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "reference": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/byte" }, { "$ref": "#/$defs/byte" }, { "$ref": "#/$defs/byte" }, { "$ref": "#/$defs/byte" }], "items": false },
+        "tolerance": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/byte" }, { "$ref": "#/$defs/byte" }, { "$ref": "#/$defs/byte" }], "items": false },
+        "alphaMode": { "enum": ["ignore", "match"] },
+        "alphaTolerance": { "$ref": "#/$defs/byte" },
+        "mustNot": { "type": "boolean" }
+      }
+    },
+    "expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectId", "expectedGroupId"],
+      "properties": {
+        "objectId": { "type": "string", "minLength": 1 },
+        "expectedGroupId": { "type": ["string", "null"] }
+      }
+    },
+    "replayCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "capturedAt", "width", "height", "storage", "pngDataUrl", "relativePath", "sha256", "expectations", "tags"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "capturedAt": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1, "maximum": 32768 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 32768 },
+        "storage": { "enum": ["embedded", "external"] },
+        "pngDataUrl": { "type": "string" },
+        "relativePath": { "type": "string" },
+        "sha256": { "type": "string" },
+        "expectations": { "type": "array", "items": { "$ref": "#/$defs/expectation" } },
+        "tags": { "type": "array", "maxItems": 20, "items": { "type": "string", "minLength": 1 } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "storage": { "const": "embedded" } } },
+          "then": { "properties": { "pngDataUrl": { "pattern": "^data:image/png;base64," } } }
+        },
+        {
+          "if": { "properties": { "storage": { "const": "external" } } },
+          "then": { "properties": { "relativePath": { "minLength": 1 } } }
+        }
+      ]
+    }
+  }
+}

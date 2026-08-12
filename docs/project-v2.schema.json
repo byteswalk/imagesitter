@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thinkbuddy.local/imagesitter/project-v2.schema.json",
+  "title": "ImageSitter Project v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "target", "objects"],
+  "properties": {
+    "version": { "const": 2 },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["windowTitle", "className", "processId", "frameWidth", "frameHeight"],
+      "properties": {
+        "windowTitle": { "type": "string" },
+        "className": { "type": "string" },
+        "processId": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "frameWidth": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "frameHeight": { "type": "integer", "minimum": 0, "maximum": 4294967295 }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/object" }
+    }
+  },
+  "$defs": {
+    "byte": { "type": "integer", "minimum": 0, "maximum": 255 },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "region", "groups"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "region": { "$ref": "#/$defs/region" },
+        "groups": { "type": "array", "items": { "$ref": "#/$defs/group" } }
+      }
+    },
+    "region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "top", "right", "bottom"],
+      "properties": {
+        "left": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "top": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "right": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "bottom": { "type": "integer", "minimum": 1, "maximum": 4294967295 }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "points", "minMatch"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "points": { "type": "array", "items": { "$ref": "#/$defs/point" } },
+        "minMatch": { "type": "integer", "minimum": -1 }
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dx", "dy", "reference", "tolerance", "alphaMode", "alphaTolerance", "mustNot"],
+      "properties": {
+        "dx": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "dy": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "reference": {
+          "type": "array",
+          "prefixItems": [
+            { "$ref": "#/$defs/byte" },
+            { "$ref": "#/$defs/byte" },
+            { "$ref": "#/$defs/byte" },
+            { "$ref": "#/$defs/byte" }
+          ],
+          "items": false
+        },
+        "tolerance": {
+          "type": "array",
+          "prefixItems": [
+            { "$ref": "#/$defs/byte" },
+            { "$ref": "#/$defs/byte" },
+            { "$ref": "#/$defs/byte" }
+          ],
+          "items": false
+        },
+        "alphaMode": { "enum": ["ignore", "match"] },
+        "alphaTolerance": { "$ref": "#/$defs/byte" },
+        "mustNot": { "type": "boolean" }
+      }
+    }
+  }
+}

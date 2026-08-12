@@ -1,0 +1,14 @@
+node_modules
+dist
+src-tauri/target
+target/
+src-tauri/gen/schemas
+src-tauri/cargo-check.log
+scripts/icon-source.png
+src-tauri/resources/winsitter.dll
+# 本地交付物与第三方/专有二进制不进入公开源码仓库
+release/
+src-tauri/tools/rc/rc.exe
+*.pdb
+*.local
+.DS_Store
