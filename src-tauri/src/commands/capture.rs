@@ -109,12 +109,7 @@ pub fn bind_target(
         .map_err(|_| "E9000: 状态锁中毒".to_string())?;
     targets.insert(
         target_id,
-        Arc::new(Mutex::new(TargetSession {
-            target_id,
-            session_id,
-            hwnd,
-            title: title.clone(),
-        })),
+        Arc::new(Mutex::new(TargetSession { session_id, hwnd })),
     );
     Ok(BoundTarget {
         target_id,

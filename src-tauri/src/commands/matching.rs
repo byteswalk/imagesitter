@@ -3,27 +3,11 @@
 use base64::Engine as _;
 use tauri::State;
 
-use crate::domain::engine::{
-    evaluate_groups, evaluate_groups_search, validate_match_input, MatchReport,
-};
+use crate::domain::engine::{evaluate_groups_search, validate_match_input, MatchReport};
 use crate::domain::model::{FeatureGroup, Region};
 use crate::state::AppState;
 
 use super::grab_frame;
-
-/// 在目标窗口最新帧上执行一次特征匹配。
-#[tauri::command]
-pub fn run_match(
-    state: State<AppState>,
-    target_id: u64,
-    region: Region,
-    groups: Vec<FeatureGroup>,
-) -> Result<MatchReport, String> {
-    let (frame, width, height) = grab_frame(&state, target_id)?;
-    validate_match_input(&frame, width, height, &region, &groups)
-        .map_err(|message| format!("E3001: {message}"))?;
-    Ok(evaluate_groups(&frame, width, height, &region, &groups))
-}
 
 #[tauri::command]
 pub fn run_match_advanced(
@@ -47,19 +31,6 @@ pub fn run_match_advanced(
         scale_search_percent,
     )
     .map_err(|message| format!("E3002: {message}"))
-}
-
-/// 在项目内嵌的 PNG 回放帧上执行匹配，不依赖实时窗口。
-#[tauri::command]
-pub fn run_match_png(
-    png_data_url: String,
-    region: Region,
-    groups: Vec<FeatureGroup>,
-) -> Result<MatchReport, String> {
-    let (frame, width, height) = decode_png(&png_data_url)?;
-    validate_match_input(&frame, width, height, &region, &groups)
-        .map_err(|message| format!("E3106: {message}"))?;
-    Ok(evaluate_groups(&frame, width, height, &region, &groups))
 }
 
 pub(crate) fn decode_png(png_data_url: &str) -> Result<(Vec<u8>, u32, u32), String> {
@@ -141,7 +112,7 @@ mod tests {
             }],
             min_match: -1,
         };
-        let report = run_match_png(
+        let report = run_match_png_advanced(
             data_url,
             Region {
                 x: 0,
@@ -150,6 +121,8 @@ mod tests {
                 h: 1,
             },
             vec![group],
+            0,
+            0,
         )
         .unwrap();
         assert!(report.matched);

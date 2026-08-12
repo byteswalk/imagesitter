@@ -10,7 +10,7 @@
     "test:format": "node scripts/check-project-format.mjs",
     "check": "pnpm test:format && vue-tsc --noEmit",
     "preview": "vite preview",
-    "icon": "tauri icon scripts/icon-source.png",
+    "icon": "node scripts/generate-icon.mjs && tauri icon scripts/icon-source.png && node scripts/prune-icons.mjs",
     "tauri": "tauri",
     "package:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-windows.ps1"
   },

@@ -15,13 +15,6 @@ import type {
   WindowItem,
 } from "./types";
 
-/** 提取后端错误码，例如 "E2101"。 */
-export function errorCode(error: unknown): string {
-  const text = String(error);
-  const match = text.match(/^E\d+/);
-  return match ? match[0] : "E0000";
-}
-
 export function listWindows(titleFilter?: string): Promise<WindowItem[]> {
   return invoke("list_windows", { titleFilter: titleFilter ?? null });
 }
@@ -63,14 +56,6 @@ export function samplePoints(
   return invoke("sample_points", { targetId, points });
 }
 
-export function runMatch(
-  targetId: number,
-  region: Region,
-  groups: FeatureGroup[],
-): Promise<MatchReport> {
-  return invoke("run_match", { targetId, region, groups });
-}
-
 export function suggestTolerances(
   samples: [number, number, number, number][][],
   negativeSamples: [number, number, number, number][][],
@@ -99,15 +84,6 @@ export function suggestFeaturePoints(
     limit,
     minimumDistance,
   });
-}
-
-/** 在项目内嵌 PNG 上离线执行匹配。 */
-export function runMatchPng(
-  pngDataUrl: string,
-  region: Region,
-  groups: FeatureGroup[],
-): Promise<MatchReport> {
-  return invoke("run_match_png", { pngDataUrl, region, groups });
 }
 
 export function runMatchAdvanced(

@@ -9,6 +9,13 @@ src-tauri/resources/winsitter.dll
 # 本地交付物与第三方/专有二进制不进入公开源码仓库
 release/
 src-tauri/tools/rc/rc.exe
+src-tauri/icons/android/
+src-tauri/icons/ios/
+src-tauri/icons/64x64.png
+src-tauri/icons/icon.icns
+src-tauri/icons/icon.png
+src-tauri/icons/Square*Logo.png
+src-tauri/icons/StoreLogo.png
 *.pdb
 *.local
 .DS_Store

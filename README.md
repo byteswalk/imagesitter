@@ -40,7 +40,7 @@ $env:WINSITTER_DLL = "D:\path\to\winsitter.dll"
 pnpm package:windows
 ```
 
-生成的 NSIS 安装程序位于 `src-tauri/target/release/bundle/nsis/`。对外分发前必须确认拥有 `winsitter.dll` 的分发许可；Windows 代码签名还需要发布方证书。
+打包脚本会在 `release/` 生成 NSIS 安装程序、便携目录、便携 ZIP 和 `SHA256SUMS.txt`；该目录只保留当前交付版本。对外分发前必须确认拥有 `winsitter.dll` 的分发许可；Windows 代码签名还需要发布方证书。
 
 ## CLI
 
@@ -60,7 +60,7 @@ cargo run --manifest-path src-tauri/Cargo.toml --features cli --bin imagesitter-
 - 外置样本只允许项目目录下的安全相对路径，并在加载时校验 SHA-256。
 - 诊断导出不包含截图、项目路径、窗口标题或账号凭据。
 
-详细约定见 [项目格式规范](docs/spec-format.md)、[v4 JSON Schema](docs/project-v4.schema.json) 和 [设计决策](docs/decisions.md)。
+详细约定见 [项目格式规范](docs/spec-format.md)、[v4 JSON Schema](docs/project-v4.schema.json)、[设计决策](docs/decisions.md) 和 [1.0.0 发布说明](docs/release-1.0.0.md)。
 
 ## 发布说明
 
